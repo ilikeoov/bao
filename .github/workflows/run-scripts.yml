@@ -31,15 +31,16 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      
+
       - name: Commit and push changes
         env:
-          ACCESS: ${{ secrets.ACCESS }}
+          PLZ_ACCESS: ${{ secrets.PLZ_ACCESS }}
         run: |
-          git remote set-url origin https://x-access-token:${{ secrets.ACCESS }}@github.com/${{ github.repository }}
+          git remote set-url origin https://x-access-token:${{ secrets.PLZ_ACCESS }}@github.com/${{ github.repository }}
           git add s2.json
           git commit -m "Update s2.json"
           git push origin HEAD:main
+
 
 
 
