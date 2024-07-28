@@ -14,7 +14,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.11'  # Python 3.11 버전 사용
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -42,4 +42,5 @@ jobs:
           git add s2.json
           git commit -m "Update s2.json"
           git push origin HEAD:main
+
 
