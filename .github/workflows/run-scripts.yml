@@ -1,7 +1,7 @@
 name: Run Scripts and Upload to GitHub
 
 on:
-  workflow_dispatch: # 수동 실행 트리거 설정
+  workflow_dispatch:  # 수동 실행 트리거 설정
 
 jobs:
   run-and-upload:
