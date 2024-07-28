@@ -1,4 +1,4 @@
-name: Run Scripts and Upload to GitHub
+nname: Run Scripts and Upload to GitHub
 
 on:
   workflow_dispatch:  # 수동 실행 트리거 설정
@@ -27,18 +27,16 @@ jobs:
           SONO_PASSWORD: ${{ secrets.SONO_PASSWORD }}
         run: python s2.py
 
-      - name: Remove old credentials
+      - name: Configure Git
         run: |
-          git config --global --unset credential.helper || true
-          git config --global --add credential.helper "cache --timeout=120"
-
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      
       - name: Commit and push changes
         env:
           ACCESS: ${{ secrets.ACCESS }}
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ T_OKEN }}@github.com/${{ github.repository }}
+          git remote set-url origin https://x-access-token:${{ secrets.ACCESS }}@github.com/${{ github.repository }}
           git add s2.json
           git commit -m "Update s2.json"
           git push origin HEAD:main
