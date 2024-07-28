@@ -2,8 +2,16 @@ name: Sono Reservation Checker
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 매일 UTC 00:00에 실행 (필요에 따라 조정)
+    - cron: '0 0 * * *'  # 매일 UTC 00:00에 실행
   workflow_dispatch:  # 수동 실행 옵션
+
+defaults:
+  run:
+    shell: bash
+    working-directory: .
+
+env:
+  ACTIONS_STEP_DEBUG: true
 
 jobs:
   check_reservations:
@@ -15,21 +23,22 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: '3.11'  # 특정 버전 지정
 
     - name: Install dependencies
       run: |
+        set -e
         python -m pip install --upgrade pip
         pip install selenium webdriver_manager requests
 
     - name: Install Chrome and ChromeDriver
       run: |
+        set -e
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable
-        CHROME_VERSION=$(google-chrome --version | awk '{ print $3 }' | awk -F'.' '{ print $1"."$2"."$3 }')
-        wget https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}
-        CHROMEDRIVER_VERSION=$(cat LATEST_RELEASE_${CHROME_VERSION})
-        wget https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
+        CHROME_VERSION=$(google-chrome --version | awk '{ print $3 }' | awk -F'.' '{ print $1 }')
+        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+        wget "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
         sudo chmod +x /usr/local/bin/chromedriver
@@ -38,10 +47,13 @@ jobs:
       env:
         SONO_USERNAME: ${{ secrets.SONO_USERNAME }}
         SONO_PASSWORD: ${{ secrets.SONO_PASSWORD }}
-      run: python s2.py
+      run: |
+        set -e
+        python s2.py
 
     - name: Commit and push if changes
       run: |
+        set -e
         git config --global user.name 'GitHub Action'
         git config --global user.email 'action@github.com'
         git add s2.json
