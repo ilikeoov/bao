@@ -1,48 +1,45 @@
-import os
 import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
 import json
 from datetime import datetime, timedelta
 
 # 매핑 데이터 정의
 mapping_data = {
-    "01": {
-        "00H00101": "패밀리(취사/스탠다드/침대)[4인]",
-        "00H00121": "패밀리(취사/울산바위뷰/침대)[4인]",
-        "00I00101": "스위트(취사/스탠다드/침대)[5인]",
-        "00I00121": "스위트(취사/울산바위뷰/침대)[5인]",
-        "00HPF101": "패밀리(Pet Friendly/스탠다드/침대)[4인]",
-        "00IPF101": "스위트(Pet Friendly/스탠다드/침대)[5인]",
-        "00H001F1": "패밀리(취사/설악마운틴뷰/침대)[4인]",
-        "00I001F1": "스위트(취사/설악마운틴뷰/침대)[5인]"
-    },
-    # ... (다른 매핑 데이터 생략)
+    # 생략된 데이터
 }
 
 def get_logged_in_session():
-    # GitHub Secrets에서 로그인 정보 가져오기
-    username = os.getenv('SONO_USERNAME')
-    password = os.getenv('SONO_PASSWORD')
-
     # Chrome WebDriver 자동 다운로드 및 설정
     driver_service = Service(ChromeDriverManager().install())
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    driver = webdriver.Chrome(service=driver_service, options=chrome_options)
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')  # 헤드리스 모드
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    driver = webdriver.Chrome(service=driver_service, options=options)
+    
     login_url = "https://www.sonohotelsresorts.com/member/login?targetPath=/reserve"
     driver.get(login_url)
 
     try:
+        # 명시적 대기 설정
+        wait = WebDriverWait(driver, 10)
+        
         # 로그인 절차
-        driver.find_element(By.ID, 'lginId').send_keys(username)
-        driver.find_element(By.ID, 'lginPw').send_keys(password)
-        driver.find_element(By.XPATH, "//button[@type='button' and @class='btn xl fill']").click()
+        username_input = wait.until(EC.element_to_be_clickable((By.ID, 'lginId')))
+        username_input.send_keys('dangsj1')
+        
+        password_input = wait.until(EC.element_to_be_clickable((By.ID, 'lginPw')))
+        password_input.send_keys('chdan6164!')
+        
+        login_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@type='button' and @class='btn xl fill']")))
+        login_button.click()
+        
         time.sleep(3)  # 페이지 로드 대기
         cookies = driver.get_cookies()
     finally:
@@ -123,7 +120,7 @@ def generate_dates(start_date, end_date):
 def main():
     session = get_logged_in_session()
     start_date = datetime.strptime("20240701", "%Y%m%d")
-    end_date = datetime.strptime("20240731", "%Y%m%d")
+    end_date = datetime.strptime("20241031", "%Y%m%d")
     dates = generate_dates(start_date, end_date)
     all_info = []
     
@@ -141,3 +138,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
