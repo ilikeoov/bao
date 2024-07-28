@@ -1,4 +1,4 @@
-nname: Run Scripts and Upload to GitHub
+name: Run Scripts and Upload to GitHub
 
 on:
   workflow_dispatch:  # 수동 실행 트리거 설정
