@@ -120,7 +120,7 @@ def generate_dates(start_date, end_date):
 def main():
     session = get_logged_in_session()
     start_date = datetime.strptime("20240701", "%Y%m%d")
-    end_date = datetime.strptime("20241031", "%Y%m%d")
+    end_date = datetime.strptime("20240731", "%Y%m%d")
     dates = generate_dates(start_date, end_date)
     all_info = []
     
